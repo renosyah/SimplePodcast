@@ -37,13 +37,7 @@ activity ini juga akan menjalankan service
 
 ## Home Activity
 
-adalah activity yang akan menampilkan total saldo dan menu pengeluaran serta
-satu menu laporan, dimana pada saat saldo di klik oleh user, maka akan masuk
-ke form input pemasukkan, terdapat 3 menu pengeluaran dan satu menu laporan
-menu-menu tersebut menggunakan recycleview dengan 4 item, jika salah satu item di klik
-dan di validasi id menunya, maka akan menjalankan aktivity yg dituju sesuai dengan
-id menu, contoh saat user menklik menu pengeluaran, maka user akan diarakan ke form
-input pengeluaran
+adalah activity yang akan menampilkan daftar lagu dan juga podcast
 
 ![GitHub Logo](/design/app_2_small.png) 
 
