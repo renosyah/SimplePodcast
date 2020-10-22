@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Simple Podcast</string>
+    <string name="item_not_found">Item not found</string>
+    <string name="error_message">something wrong happend</string>
+    <string name="try_again">Try again</string>
+    <string name="loading">Loading...</string>
+    <string name="foreground_notification_message">Simple Podcast is running...</string>
+    <string name="loading_musics">Loading music...</string>
+    <string name="no_music_found">No music found</string>
+</resources>
