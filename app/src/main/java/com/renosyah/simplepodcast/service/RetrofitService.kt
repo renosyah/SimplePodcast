@@ -3,6 +3,7 @@ package com.renosyah.simplepodcast.service
 import com.renosyah.simplepodcast.BuildConfig
 import com.renosyah.simplepodcast.model.RequestListModel
 import com.renosyah.simplepodcast.model.ResponseModel
+import com.renosyah.simplepodcast.model.category.Category
 import com.renosyah.simplepodcast.model.music.Music
 import io.reactivex.Observable
 import retrofit2.Retrofit
@@ -17,6 +18,9 @@ interface RetrofitService {
     // add more end point to access
     @POST("api/v1/musics-list")
     fun allMusic(@Header("session") sessionId :String, @Body req : RequestListModel): Observable<ResponseModel<ArrayList<Music>>>
+
+    @POST("api/v1/categories-list")
+    fun allCategories(@Header("session") sessionId :String, @Body req : RequestListModel): Observable<ResponseModel<ArrayList<Category>>>
 
     companion object {
         fun create() : RetrofitService {

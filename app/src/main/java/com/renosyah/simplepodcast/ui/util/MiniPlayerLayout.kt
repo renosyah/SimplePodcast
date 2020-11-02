@@ -59,8 +59,8 @@ class MiniPlayerLayout {
             show()
             setLayoutValue()
 
-            seekBarTrack.max = currentMusic!!.duration
-            seekBarTrack.progress = currentMusic!!.seekPos
+            seekBarTrack.max = currentMusic!!.duration.toInt()
+            seekBarTrack.progress = currentMusic!!.seekPos.toInt()
 
             setSeekbarValue()
         }
@@ -72,6 +72,7 @@ class MiniPlayerLayout {
             val flag = if (isPlaying) MediaPlayerService.ACTION_STOP_MUSIC else MediaPlayerService.ACTION_CONTINUE_MUSIC
             val i = Intent(flag)
             i.putExtra("current_music",currentMusic)
+            i.putExtra("seek_pos",currentMusic!!.seekPos)
             c.sendBroadcast(i)
 
             isPlaying = !isPlaying
@@ -87,7 +88,7 @@ class MiniPlayerLayout {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                currentMusic!!.seekPos = seekBarTrack.progress
+                currentMusic!!.seekPos = seekBarTrack.progress.toLong()
 
                 setSeekbarValue()
 
@@ -116,6 +117,8 @@ class MiniPlayerLayout {
         c.sendBroadcast(i)
 
         onPreparingMusic.invoke()
+
+        if (currentMusic != null) SerializableSave(this.c, SerializableSave.lastMusicData).save(currentMusic!!)
     }
 
     private fun initReceiver(){
@@ -147,27 +150,26 @@ class MiniPlayerLayout {
                         show()
                         setLayoutValue()
 
-                        seekBarTrack.max = currentMusic!!.duration
-                        seekBarTrack.progress = currentMusic!!.seekPos
+                        seekBarTrack.max = currentMusic!!.duration.toInt()
+                        seekBarTrack.progress = currentMusic!!.seekPos.toInt()
 
                         onMusicIsPlayed.invoke()
 
                     }
                     MediaPlayerService.MUSIC_SEEK_CHANGE -> {
-                        val position = intent.getIntExtra("seek_position",0)
+                        val position = intent.getLongExtra("seek_position",0L)
                         currentMusic!!.seekPos = position
 
                         show()
-                        setLayoutValue()
 
-                        seekBarTrack.max = currentMusic!!.duration
-                        seekBarTrack.progress = currentMusic!!.seekPos
+                        seekBarTrack.max = currentMusic!!.duration.toInt()
+                        seekBarTrack.progress = currentMusic!!.seekPos.toInt()
 
                         setSeekbarValue()
                     }
                     MediaPlayerService.MUSIC_IS_COMPLETED-> {
                         currentMusic!!.seekPos = 0
-                        seekBarTrack.progress = currentMusic!!.seekPos
+                        seekBarTrack.progress = currentMusic!!.seekPos.toInt()
 
                         emptySeekBar()
 

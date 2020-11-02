@@ -2,6 +2,7 @@ package com.renosyah.simplepodcast.model.category
 
 import com.google.gson.annotations.SerializedName
 import com.renosyah.simplepodcast.model.BaseModel
+import com.renosyah.simplepodcast.model.music.Music
 
 class Category(
 
@@ -12,8 +13,10 @@ class Category(
     var name : String = "",
 
     @SerializedName("image_url")
-    var imageUrl : String = ""
+    var imageUrl : String = "",
 
+
+    var musics: ArrayList<Music> = ArrayList()
 
 ) : BaseModel {
 

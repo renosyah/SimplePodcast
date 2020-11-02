@@ -7,4 +7,8 @@
     <string name="foreground_notification_message">Simple Podcast is running...</string>
     <string name="loading_musics">Loading music...</string>
     <string name="no_music_found">No music found</string>
+    <string name="see_all">See All</string>
+    <string name="previous">Previous</string>
+    <string name="pause">Pause</string>
+    <string name="next">Next</string>
 </resources>

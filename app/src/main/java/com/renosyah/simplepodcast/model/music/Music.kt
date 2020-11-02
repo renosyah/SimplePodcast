@@ -22,10 +22,10 @@ class Music(
     var imageCoverUrl  : String = "",
 
 
-    var seekPos : Int = 0,
+    var seekPos : Long = 0L,
 
 
-    var duration : Int = 0
+    var duration : Long = 0L
 
 ) : BaseModel {
 

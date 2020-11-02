@@ -2,6 +2,7 @@ package com.renosyah.simplepodcast.ui.activity.home
 
 import com.renosyah.simplepodcast.model.RequestListModel
 import com.renosyah.simplepodcast.model.ResponseModel
+import com.renosyah.simplepodcast.model.category.Category
 import com.renosyah.simplepodcast.model.music.Music
 import com.renosyah.simplepodcast.service.RetrofitService
 import com.renosyah.simplepodcast.util.util
@@ -14,7 +15,7 @@ class HomeActivityPresenter : HomeActivityContract.Presenter {
     private val api: RetrofitService = RetrofitService.create()
     private lateinit var view: HomeActivityContract.View
 
-    override fun getAllMusic(sessionId : String, req: RequestListModel, enableLoading: Boolean) {
+    override fun getAllMusic(sessionId : String,categoryId : String, req: RequestListModel, enableLoading: Boolean) {
         if (enableLoading) {
             view.showProgressGetAllMusic(true)
         }
@@ -31,7 +32,7 @@ class HomeActivityPresenter : HomeActivityContract.Presenter {
                         view.showErrorGetAllMusic(util.errorToString(result.errors))
                     }
                     if (result.data != null) {
-                        view.onGetAllMusic(result.data!!)
+                        view.onGetAllMusic(categoryId,result.data!!)
                         if (result.data!!.isEmpty()){
                             view.onEmptyGetAllMusic()
                         }
@@ -49,6 +50,43 @@ class HomeActivityPresenter : HomeActivityContract.Presenter {
 
         subscriptions.add(subscribe)
     }
+
+    override fun getAllCategories(sessionId: String, req: RequestListModel, enableLoading: Boolean) {
+        if (enableLoading) {
+            view.showProgressGetAllCategories(true)
+        }
+        val subscribe = api.allCategories(sessionId,req.clone())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ result: ResponseModel<ArrayList<Category>>? ->
+                if (enableLoading) {
+                    view.showProgressGetAllCategories(false)
+                }
+                if (result != null) {
+
+                    if (result.errors.isNotEmpty()){
+                        view.showErrorGetAllCategories(util.errorToString(result.errors))
+                    }
+                    if (result.data != null) {
+                        view.onGetAllCategories(result.data!!)
+                        if (result.data!!.isEmpty()){
+                            view.onEmptyGetAllCategories()
+                        }
+                    } else {
+                        view.onEmptyGetAllCategories()
+                    }
+                }
+
+            }, { t: Throwable ->
+                if (enableLoading) {
+                    view.showProgressGetAllCategories(false)
+                }
+                view.showErrorGetAllCategories(t.message!!)
+            })
+
+        subscriptions.add(subscribe)
+    }
+
 
     override fun subscribe() {
 

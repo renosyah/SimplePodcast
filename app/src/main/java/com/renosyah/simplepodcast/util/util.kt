@@ -2,7 +2,12 @@ package com.renosyah.simplepodcast.util
 
 import android.app.ActivityManager
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import com.renosyah.simplepodcast.model.ResponseError
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
+import java.lang.Exception
 
 
 class util {
@@ -25,5 +30,23 @@ class util {
             }
             return false
         }
+        fun getBitmapWithPicasso(url : String,onLoad : (Bitmap)-> Unit){
+            val target = object : Target {
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+
+                }
+
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+
+                }
+
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    if (bitmap != null)
+                        onLoad.invoke(bitmap)
+                }
+            }
+            Picasso.get().load(url).into(target)
+        }
+
     }
 }

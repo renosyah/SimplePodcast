@@ -20,7 +20,7 @@
             android:orientation="vertical">
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/music_recycleview_swiper"
+                android:id="@+id/category_music_recycleview_swiper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:visibility="visible">
@@ -38,13 +38,10 @@
                         android:orientation="vertical">
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/music_recycleview"
+                            android:id="@+id/category_music_recycleview"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginRight="5dp"
-                            android:layout_marginTop="50dp"
-                            android:layout_marginBottom="200dp" />
+                            android:layout_marginBottom="140dp" />
 
                     </LinearLayout>
 

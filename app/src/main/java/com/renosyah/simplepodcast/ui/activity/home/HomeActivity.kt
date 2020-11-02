@@ -1,34 +1,25 @@
 package com.renosyah.simplepodcast.ui.activity.home
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
-import android.widget.SeekBar
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.renosyah.simplepodcast.R
 import com.renosyah.simplepodcast.di.component.DaggerActivityComponent
 import com.renosyah.simplepodcast.di.module.ActivityModule
 import com.renosyah.simplepodcast.model.RequestListModel
+import com.renosyah.simplepodcast.model.category.Category
 import com.renosyah.simplepodcast.model.music.Music
+import com.renosyah.simplepodcast.ui.adapter.AdapterCategoryMusic
 import com.renosyah.simplepodcast.ui.adapter.AdapterMusic
-import com.renosyah.simplepodcast.ui.service.MediaPlayerService
 import com.renosyah.simplepodcast.ui.util.EmptyLayout
 import com.renosyah.simplepodcast.ui.util.ErrorLayout
 import com.renosyah.simplepodcast.ui.util.LoadingLayout
 import com.renosyah.simplepodcast.ui.util.MiniPlayerLayout
-import com.renosyah.simplepodcast.util.SerializableSave
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_home.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
 
 class HomeActivity : AppCompatActivity(),HomeActivityContract.View {
 
@@ -37,9 +28,9 @@ class HomeActivity : AppCompatActivity(),HomeActivityContract.View {
 
     lateinit var context: Context
 
-    private val musics = ArrayList<Music>()
-    private lateinit var adapterMusic : AdapterMusic
-    private val reqMusics = RequestListModel()
+    private val categories = ArrayList<Category>()
+    private lateinit var adapterCategories : AdapterCategoryMusic
+    private val reqCategories = RequestListModel()
 
     lateinit var miniPlayerLayout : MiniPlayerLayout
     lateinit var emptyLayout: EmptyLayout
@@ -71,7 +62,7 @@ class HomeActivity : AppCompatActivity(),HomeActivityContract.View {
         loading.hide()
 
         error = ErrorLayout(context,error_layout) {
-            presenter.getAllMusic("", reqMusics,true)
+            presenter.getAllCategories("",reqCategories,true)
         }
         error.hide()
 
@@ -83,70 +74,112 @@ class HomeActivity : AppCompatActivity(),HomeActivityContract.View {
             loading.setVisibility(true)
             main_layout.visibility = View.GONE
         },{
-            val rand = kotlin.random.Random(System.currentTimeMillis()).nextInt(musics.size)
-            miniPlayerLayout.playMusic(musics[rand])
+            miniPlayerLayout.hide()
         })
+        mini_player.setOnClickListener {  }
 
         home_scrollview.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
             if (scrollY >= v.getChildAt(v.childCount - 1).measuredHeight - v.measuredHeight) {
-                reqMusics.offset += reqMusics.limit
-                presenter.getAllMusic("", reqMusics,false)
+                reqCategories.offset += reqCategories.limit
+                presenter.getAllCategories("",reqCategories,false)
             }
         })
 
-        music_recycleview_swiper.setOnRefreshListener {
-            reqMusics.offset = 0
-            presenter.getAllMusic("", reqMusics,true)
-            music_recycleview_swiper.isRefreshing = !music_recycleview_swiper.isRefreshing
+        category_music_recycleview_swiper.setOnRefreshListener {
+            reqCategories.offset = 0
+            presenter.getAllCategories("",reqCategories,true)
+            category_music_recycleview_swiper.isRefreshing = !category_music_recycleview_swiper.isRefreshing
         }
 
-        presenter.getAllMusic("", reqMusics,true)
+        presenter.getAllCategories("",reqCategories,true)
     }
 
     fun setQuery(){
-        reqMusics.filterBy = "flag_status"
-        reqMusics.filterValue = "0"
-        reqMusics.searchValue = ""
-        reqMusics.searchBy = "title"
-        reqMusics.orderBy = "created_at"
-        reqMusics.orderDir = "asc"
-        reqMusics.offset = 0
-        reqMusics.limit = 10
+        reqCategories.filterBy = "flag_status"
+        reqCategories.filterValue = "0"
+        reqCategories.searchValue = ""
+        reqCategories.searchBy = "name"
+        reqCategories.orderBy = "created_at"
+        reqCategories.orderDir = "asc"
+        reqCategories.offset = 0
+        reqCategories.limit = 10
     }
 
     fun setAdapter(){
-        adapterMusic = AdapterMusic(context, musics) { m,pos ->
-            miniPlayerLayout.playMusic(m)
-        }
-        music_recycleview.adapter = adapterMusic
-        music_recycleview.apply {
-            layoutManager = GridLayoutManager(context, 2)
-        }
+        adapterCategories = AdapterCategoryMusic(context, categories,{ m, pos ->
+
+        },object : AdapterMusic.onMusicClickListener {
+            override fun onImageClick(m: Music, pos: Int) {
+                miniPlayerLayout.playMusic(m)
+            }
+
+            override fun onTitleClick(m: Music, pos: Int) {
+
+            }
+        })
+        category_music_recycleview.adapter = adapterCategories
+        category_music_recycleview.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
     }
 
-
     override fun onEmptyGetAllMusic() {
-        if (reqMusics.offset == 0){
+
+    }
+
+    override fun onGetAllMusic(categoryId : String, data: ArrayList<Music>) {
+        for (c in categories){
+            if (c.id == categoryId){
+                c.musics.addAll(data)
+                break
+            }
+        }
+        adapterCategories.notifyDataSetChanged()
+    }
+
+    override fun showProgressGetAllMusic(show: Boolean) {
+
+    }
+
+    override fun showErrorGetAllMusic(e: String) {
+        main_layout.visibility = View.GONE
+        error.show()
+    }
+
+    override fun onEmptyGetAllCategories() {
+        if (reqCategories.offset == 0){
             main_layout.visibility = View.GONE
             emptyLayout.show()
         }
     }
 
-    override fun onGetAllMusic(data: ArrayList<Music>) {
-        if (reqMusics.offset == 0){
-            musics.clear()
+    override fun onGetAllCategories(data: ArrayList<Category>) {
+        if (reqCategories.offset == 0){
+            categories.clear()
         }
-        musics.addAll(data)
-        adapterMusic.notifyDataSetChanged()
+        categories.addAll(data)
+        adapterCategories.notifyDataSetChanged()
         emptyLayout.hide()
+
+        for (c in categories){
+            val reqMusic = RequestListModel()
+            reqMusic.filterBy = "category_id"
+            reqMusic.filterValue = c.id
+            reqMusic.searchValue = ""
+            reqMusic.searchBy = "title"
+            reqMusic.orderBy = "title"
+            reqMusic.orderDir = "asc"
+            reqMusic.offset = 0
+            reqMusic.limit = 4
+
+            presenter.getAllMusic("",c.id,reqMusic,false)
+        }
     }
 
-    override fun showProgressGetAllMusic(show: Boolean) {
+    override fun showProgressGetAllCategories(show: Boolean) {
         loading.setVisibility(show)
         main_layout.visibility = if (show) View.GONE else View.VISIBLE
     }
 
-    override fun showErrorGetAllMusic(e: String) {
+    override fun showErrorGetAllCategories(e: String) {
         main_layout.visibility = View.GONE
         error.show()
     }

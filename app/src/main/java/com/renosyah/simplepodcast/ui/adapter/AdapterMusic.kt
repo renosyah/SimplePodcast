@@ -16,9 +16,9 @@ class AdapterMusic : RecyclerView.Adapter<AdapterMusic.Holder>{
 
     lateinit var context: Context
     lateinit var stores : ArrayList<Music>
-    lateinit var onClick : (Music,Int) -> Unit
+    lateinit var onClick : onMusicClickListener
 
-    constructor(context: Context, stores: ArrayList<Music>, onClick: (Music, Int) -> Unit) : super() {
+    constructor(context: Context, stores: ArrayList<Music>, onClick : onMusicClickListener) : super() {
         this.context = context
         this.stores = stores
         this.onClick = onClick
@@ -40,8 +40,11 @@ class AdapterMusic : RecyclerView.Adapter<AdapterMusic.Holder>{
             .into(holder.image)
 
         holder.name.text = item.title
-        holder.layout.setOnClickListener {
-            onClick.invoke(item,position)
+        holder.name.setOnClickListener {
+            onClick.onTitleClick(item,position)
+        }
+        holder.image.setOnClickListener {
+            onClick.onImageClick(item,position)
         }
     }
 
@@ -49,7 +52,6 @@ class AdapterMusic : RecyclerView.Adapter<AdapterMusic.Holder>{
 
         lateinit var image :ImageView
         lateinit var name : TextView
-        lateinit var distance : TextView
         lateinit var layout : LinearLayout
 
         constructor(itemView: View) : super(itemView){
@@ -57,5 +59,10 @@ class AdapterMusic : RecyclerView.Adapter<AdapterMusic.Holder>{
             this.name  = itemView.findViewById(R.id.music_title_textview)
             this.layout = itemView.findViewById(R.id.adapter_layout)
         }
+    }
+
+    interface onMusicClickListener {
+        fun onImageClick(m : Music,pos : Int)
+        fun onTitleClick(m : Music,pos : Int)
     }
 }
